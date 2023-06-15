@@ -61,6 +61,8 @@ def main():
         try:
 
             clientsocket,client_address = s.accept()
+            print(clientsocket)
+            print(type(clientsocket))
             if new_client_address != client_address:
                 new_client_address = copy.copy(client_address)
                 #new_clientsocket = copy.copy(clientsocket)
