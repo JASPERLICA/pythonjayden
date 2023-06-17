@@ -20,8 +20,8 @@ thread_receiver_alive_flag = False
 server_IP = "192.168.11.132" # server running on my computer at banalogic
 # Bodyguard Pinout definition
 
-led_panel = Pin(1, Pin.OUT)
-led_panel.value(True)
+led_panel = Pin(1, Pin.OUT,value = 1)
+#led_panel.value(True)
 upper_camera_trigger = Pin(7, Pin.IN, Pin.PULL_UP)
 front_camera_trigger = Pin(8, Pin.IN, Pin.PULL_UP)
 rear_camera_trigger = Pin(9, Pin.IN, Pin.PULL_UP)
@@ -83,14 +83,6 @@ def bodyguard_tower_receiver(s,):
             exit()
             
 
-interrupt_flag = False
-photoeye_npn = Pin(5,Pin.IN,Pin.PULL_UP)
-def callback(photoeye_npn):
-    global interrupt_flag
-    interrupt_flag=1
-
-photoeye_npn.irq(trigger=Pin.IRQ_FALLING, handler=callback)
-
 def main():
     
     global thread_receiver_alive_flag
@@ -116,22 +108,18 @@ def main():
     rear_unsend = True
 
     while True:  
-        if interrupt_flag is 1:
-            print("Interrupt has occured")
-            interrupt_flag=0
-
-        # if photoeye_npn.value() is 0:
-        #     if photoeye_unsend == True:
-        #         s.send(bytes("photoyeye is blocking","utf-8"))
-        #         print("photoyeye is blocking")
-        #         photoeye_unsend = False
-        #         time_update_time = time.time()
-        # else:
-        #     if photoeye_unsend == False:
-        #         if time.time() - time_update_time >= 1:
-        #             photoeye_unsend = True
-        #             s.send(bytes("photoyeye is unblock","utf-8"))
-        #             print("photoyeye is unblock")
+        if photoeye_npn.value() is 0:
+            if photoeye_unsend == True:
+                s.send(bytes("photoyeye is blocking","utf-8"))
+                print("photoyeye is blocking")
+                photoeye_unsend = False
+                time_update_time = time.time()
+        else:
+            if photoeye_unsend == False:
+                if time.time() - time_update_time >= 1:
+                    photoeye_unsend = True
+                    s.send(bytes("photoyeye is unblock","utf-8"))
+                    print("photoyeye is unblock")
               
               
         if upper_camera_trigger.value() == 1:

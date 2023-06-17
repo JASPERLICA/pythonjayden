@@ -22,7 +22,7 @@ localhost = "192.168.11.132"
 
 # 将全局使用的变量定义在类中        
 class G:
-    input_command = "BBBB"
+    input_command = "GET STARTED.."
     message_from_tower = " "
     
 
@@ -49,7 +49,8 @@ class Server:
             except Exception as e:
                 print("recv failed: %s", e)
                 return
-            print("[R %s]<< %s", threading.current_thread().ident, data)
+            print(f"[Received]-->>port of {self.port} and thread number is:", threading.current_thread().ident, data)
+            #print("[R %s]<< %s", threading.current_thread().ident, data)
             self.msg = data
             if self.msg == "photoyeye is blocking":
                 G.message_from_tower = "photoyeye is blocking"
@@ -77,11 +78,11 @@ class Server:
                 if G.message_from_tower != self.new_message : #and self.already_sent == False:
                     self.new_message = G.message_from_tower
                     if self.new_message == "photoyeye is blocking":
-                        conn.send(bytes(f"LED_ON","utf-8"))
-                        print("LED_ON command sent to tower")
+                        conn.send(bytes(f"LED ON","utf-8"))
+                        print("LED ON command sent to tower")
                     if self.new_message == "photoyeye is unblock":
-                        conn.send(bytes(f"LED_OFF","utf-8"))
-                        print("LED_OFF command sent to tower")
+                        conn.send(bytes(f"LED OFF","utf-8"))
+                        print("LED OFF command sent to tower")
 
                 #pass
             except Exception as e:
@@ -96,7 +97,7 @@ class Server:
         while True:
             print("Waiting for connection...")
             conn, addr = self._sock.accept()
-            print("Recived new conn: %s from %s", conn, addr)
+            print(f"Recived new conn: {conn} from {addr}")
             # 开启读写线程处理当前连接
             threading.Thread(target=self.read, daemon=True,args=(conn, )).start()
             threading.Thread(target=self.write, daemon=True,args=(conn, )).start()
